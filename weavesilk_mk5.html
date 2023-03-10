@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		canvas {
+		  background-color: black;
+		}
+	  </style>
+	</head>
+	<body>
+	  <canvas id="canvas"></canvas>
+	  <script>
+		const canvas = document.getElementById("canvas");
+		canvas.width = 800;
+		canvas.height = 600;
+  
+		const ctx = canvas.getContext("2d");
+		let colorIndex = 0;
+  
+		const colors = [];
+		for (let i = 0; i < 10; i++) {
+		  const r = Math.floor(Math.random() * 256);
+		  const g = Math.floor(Math.random() * 256);
+		  const b = Math.floor(Math.random() * 256);
+		  colors.push(`rgb(${r}, ${g}, ${b})`);
+		}
+  
+		let points = [];
+  
+		function clearScreen() {
+		  ctx.clearRect(0, 0, canvas.width, canvas.height);
+		  points = [];
+		}
+  
+		canvas.addEventListener("mousedown", () => {
+		  clearScreen();
+		});
+  
+		canvas.addEventListener("mousemove", (e) => {
+		  const rect = canvas.getBoundingClientRect();
+		  const x = e.clientX - rect.left;
+		  const y = e.clientY - rect.top;
+		  points.push({ x, y });
+		});
+  
+		function drawLine(x1, y1, x2, y2, color) {
+		  ctx.strokeStyle = color;
+		  ctx.lineWidth = 3;
+		  ctx.beginPath();
+		  ctx.moveTo(x1, y1);
+		  ctx.lineTo(x2, y2);
+		  ctx.stroke();
+		}
+  
+		function drawSymmetricalLine(x1, y1, x2, y2, color) {
+		  drawLine(x1, y1, x2, y2, color);
+		  drawLine(canvas.width - x1, y1, canvas.width - x2, y2, color);
+		  drawLine(x1, canvas.height - y1, x2, canvas.height - y2, color);
+		  drawLine(canvas.width - x1, canvas.height - y1, canvas.width - x2, canvas.height - y2, color);
+		}
+  
+		function draw() {
+		  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+		  for (let i = 0; i < points.length - 1; i++) {
+			const x1 = points[i].x;
+			const y1 = points[i].y;
+			const x2 = points[i + 1].x;
+			const y2 = points[i + 1].y;
+			const color = colors[colorIndex];
+  
+			drawSymmetricalLine(x1, y1, x2, y2, color);
+  
+			colorIndex = (colorIndex + 1) % colors.length;
+		  }
+  
+		  requestAnimationFrame(draw);
+		}
+  
+		requestAnimationFrame(draw);
+	  </script>
+	</body>
+</head>
+<body>
+	
+</body>
+</html>

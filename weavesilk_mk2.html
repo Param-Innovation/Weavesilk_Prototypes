@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+		canvas {
+			display: block;
+			margin: 0 auto;
+			background-color: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		// Initialize canvas and context
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+		var width = canvas.width = window.innerWidth;
+		var height = canvas.height = window.innerHeight;
+
+		// Define some colors
+		var colors = [];
+		for (var i = 0; i < 10; i++) {
+			var r = Math.floor(Math.random() * 256);
+			var g = Math.floor(Math.random() * 256);
+			var b = Math.floor(Math.random() * 256);
+			colors.push("rgb(" + r + ", " + g + ", " + b + ")");
+		}
+
+		// Create a list of points to draw lines
+		var points = [];
+
+		// Create a variable to store the current color index
+		var colorIndex = 0;
+
+		// Add event listeners for touch events
+		canvas.addEventListener("touchstart", function(event) {
+			event.preventDefault();
+			points = [];
+			colorIndex = 0;
+		});
+
+		canvas.addEventListener("touchmove", function(event) {
+			event.preventDefault();
+			var touch = event.touches[0];
+			points.push({x: touch.clientX, y: touch.clientY});
+			drawLines();
+		});
+
+		// Main loop
+		function drawLines() {
+			// Clear the canvas
+			ctx.clearRect(0, 0, width, height);
+
+			// Draw lines between the points with different colors and symmetries
+			for (var i = 0; i < points.length - 1; i++) {
+				// Get the current and next point coordinates
+				var x1 = points[i].x;
+				var y1 = points[i].y;
+				var x2 = points[i + 1].x;
+				var y2 = points[i + 1].y;
+				var w = width;
+				var h = height;
+				w = Math.max(w,h);
+				h = w
+
+				// Get the current color from the colors list
+				var color = colors[colorIndex];
+				
+				if (x1<(width/2)) {
+					if (y1>(height/2)) {
+						x1,y1 = height-y1,x1;
+					}
+					else {
+						x1,y1 = y1, x1;
+					}
+				} else {
+					if (y1<(height/2)) {
+						x1,y1 = y1, width-x1;
+					} else {
+						x1,y1 = width-x1, height-y1;
+					}
+				}
+				// Draw four lines with different symmetries using the same color
+				ctx.beginPath();
+				ctx.strokeStyle = color;
+				ctx.lineWidth = 3;
+				ctx.moveTo(x1, y1);
+				ctx.lineTo(x2, y2);
+				ctx.stroke();
+				ctx.moveTo(width - y1, x1);
+				ctx.lineTo(width - y2, x2);
+				ctx.stroke();
+				ctx.moveTo(y1, height - x1);
+				ctx.lineTo(y2, height - x2);
+				ctx.stroke();
+				ctx.moveTo(width - x1, height - y1);
+				ctx.lineTo(width - x2, height - y2);
+				ctx.stroke();
+
+				// Increment the color index by one and wrap around if necessary
+				colorIndex++;
+				if (colorIndex >= colors.length) {
+					colorIndex = 0;
+				}
+			}
+		}
+
+		// Add event listener for window resize
+		window.addEventListener("resize", function() {
+			width = canvas.width = window.innerWidth;
+			height = canvas.height = window.innerHeight;
+			drawLines();
+		});
+
+		// Start the program
+		drawLines();
+	</script>
+</body>
+</html>
